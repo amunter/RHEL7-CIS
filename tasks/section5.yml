@@ -218,6 +218,7 @@
       dest: /etc/ssh/sshd_config
       regexp: '^PermitRootLogin'
       line: 'PermitRootLogin no'
+  when: ncnrcis_permit_root_login    
   tags:
       - level1
       - level2
