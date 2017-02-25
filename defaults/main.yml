@@ -103,6 +103,7 @@ rhel7cis_firewall: firewalld
 
 rhel7cis_firewall_services:
     - ssh
+    - dhcpv6-client
 
 # NCNR specific variations
 ncnrcis_install_tenscan: true
