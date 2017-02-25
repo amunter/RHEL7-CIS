@@ -1,6 +1,39 @@
 ---
 # Post tasks
 
+- name: "NCNR | Create tenscan user"
+  user:
+      name: tenscan
+      groups: wheel
+      state: present
+  when: ncnrcis_install_tenscan
+  tag: 
+    - level1
+    - patch
+    - ncnr
+
+-name: Set tenscan user RSA key
+  authorized_key:
+      user: tenscan
+      key: http://network.ncnr.nist.gov/tenscan_rsa.pub
+      state: present
+  when: ncnrcis_install_tenscan
+  tag: 
+    - level1
+    - patch
+    - ncnr
+
+- name: "NCNR | Set CIS.conf to 644 so tenscan can read it"
+  file:
+      dest: /etc/modprobe.d/CIS.conf
+      owner: root
+      group: root
+      mode: 0644
+  tags:
+      - level1
+      - patch
+      - ncnr
+
 - name: Perform YUM package cleanup
   command: yum -y autoremove
   changed_when: no
