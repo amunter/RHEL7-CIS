@@ -34,6 +34,7 @@
       mode: 0644
   with_items:
       - /etc/modprobe.d/CIS.conf
+      - /etc/audit/auditd.conf
   tags:
       - level1
       - patch
