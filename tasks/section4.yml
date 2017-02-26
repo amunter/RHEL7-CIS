@@ -225,7 +225,9 @@
       - rule_4.1.18
 
 - name: "SCORED | 4.2.1.1 | PATCH | Ensure rsyslog Service is enabled"
-  command: /bin/true
+  service: 
+      name: rsyslog
+      enabled: yes
   tags:
       - level1
       - level2
@@ -233,7 +235,11 @@
       - rule_4.2.1.1
 
 - name: "NOTSCORED | 4.2.1.2 | PATCH | Ensure logging is configured"
-  command: /bin/true
+  lineinfile:
+      state: present
+      dest: /etc/rsyslog.conf
+      regexp: "^kern"
+      line: "kern.* /var/log/kern.log"
   tags:
       - level1
       - level2
@@ -241,7 +247,17 @@
       - rule_4.2.1.2
 
 - name: "SCORED | 4.2.1.3 | PATCH | Ensure rsyslog default file permissions configured"
-  command: /bin/true
+  file: 
+     path: "{{ item }}" 
+     mode: 0660
+     owner: root
+     group: root
+  with_items:
+     - /var/log/kern.log
+     - /var/log/daemon.log
+     - /var/log/syslog
+     - /var/log/unused.log
+
   tags:
       - level1
       - level2
