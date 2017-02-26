@@ -234,12 +234,60 @@
       - patch
       - rule_4.2.1.1
 
-- name: "NOTSCORED | 4.2.1.2 | PATCH | Ensure logging is configured"
+- name: "NOTSCORED | 4.2.1.2 | PATCH | Ensure logging is configured kern"
   lineinfile:
       state: present
       dest: /etc/rsyslog.conf
       regexp: "^kern"
       line: "kern.* /var/log/kern.log"
+  tags:
+      - level1
+      - level2
+      - patch
+      - rule_4.2.1.2
+
+- name: "NOTSCORED | 4.2.1.2 | PATCH | Ensure logging is configured auth,user"
+  lineinfile:
+      state: present
+      dest: /etc/rsyslog.conf
+      regexp: "^auth,user"
+      line: "auth,user.* /var/log/messages"
+  tags:
+      - level1
+      - level2
+      - patch
+      - rule_4.2.1.2
+
+- name: "NOTSCORED | 4.2.1.2 | PATCH | Ensure logging is configured, daemon"
+  lineinfile:
+      state: present
+      dest: /etc/rsyslog.conf
+      regexp: "^daemon"
+      line: "daemon.* /var/log/daemon.log"
+  tags:
+      - level1
+      - level2
+      - patch
+      - rule_4.2.1.2
+
+- name: "NOTSCORED | 4.2.1.2 | PATCH | Ensure logging is configured, syslog"
+  lineinfile:
+      state: present
+      dest: /etc/rsyslog.conf
+      regexp: "^syslog"
+      line: "syslog.* /var/log/syslog"
+  tags:
+      - level1
+      - level2
+      - patch
+      - rule_4.2.1.2
+
+- name: "NOTSCORED | 4.2.1.2 | PATCH | Ensure logging is configured, unused"
+  lineinfile:
+      state: present
+      dest: /etc/rsyslog.conf
+      regexp: "^lpr,news,uucp,local0,local1,local2,local3,local4,local5,local6"
+      line: "lpr,news,uucp,local0,local1,local2,local3,local4,local5,local6.* /var/log/unused.log"
   tags:
       - level1
       - level2
@@ -329,7 +377,9 @@
       - rule_4.2.2.5
 
 - name: "SCORED | 4.2.3 | PATCH | Ensure rsyslog or syslog-ng is installed"
-  command: /bin/true
+  yum:
+      name: rsyslog
+      state: present
   tags:
       - level1
       - level2
@@ -345,7 +395,12 @@
       - rule_4.2.4
 
 - name: "NOTSCORED | 4.3 | PATCH | Ensure logrotate is configured"
-  command: /bin/true
+   lineinfile: 
+      state: present
+      dest: /etc/logrotate.d/syslog
+      regexp: "^/var/log/boot.log"
+      line: "/var/log/boot.log"
+      insertafter: "^/var/log/messages"
   tags:
       - level1
       - level2
