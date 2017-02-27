@@ -25,7 +25,7 @@
     - patch
     - ncnr
 
-- name: "NCNR | Set files to 644 so tenable can read it"
+- name: "NCNR | Set files to 644 so tenable can read them"
   file:
       dest: "{{ item }}"
       state: file
@@ -35,6 +35,20 @@
   with_items:
       - /etc/modprobe.d/CIS.conf
       - /etc/audit/auditd.conf
+  tags:
+      - level1
+      - patch
+      - ncnr
+
+- name: "NCNR | Set directories to 755 so tenable can read them"
+  file:
+      dest: "{{ item }}"
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+  with_items:
+      - /etc/audit
   tags:
       - level1
       - patch

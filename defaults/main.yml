@@ -44,7 +44,7 @@ rhel7cis_net_snmp: false
 rhel7cis_allow_autofs: false
 
 # RedHat Satellite Subscription items
-rhel7cis_rhnsd_required: false
+rhel7cis_rhnsd_required: true 
 
 # 1.4.2 Bootloader password
 
@@ -106,8 +106,8 @@ rhel7cis_firewall_services:
 # NCNR specific variables
 ncnrcis_install_tenscan: true
 ncnrcis_install_bigfix: true
-ncnrcis_config_umask: false
-ncnrcis_permit_root_login: true
+ncnrcis_config_umask: true
+ncnrcis_permit_root_login: "yes"
 ncnrcis_ssh_idle_time: 900
 ncnrcis_min_passwd_length: 12
 
