@@ -427,6 +427,20 @@
       - rule_5.4.3
 
 - name: "SCORED | 5.4.4 | PATCH | Ensure default user umask is 027 or more restrictive"
+  file:
+      dest: /etc/profile.d/cis.sh
+      owner: root
+      group: root
+      mode: 0644
+      state: touch
+  when: ncnrcis_config_umask
+  tags:
+      - level1
+      - level2
+      - patch
+      - rule_5.4.4
+
+- name: "SCORED | 5.4.4 | PATCH | Ensure default user umask is 027 or more restrictive"
   lineinfile:
       state: present
       dest: "{{ item }}"
@@ -435,6 +449,7 @@
   with_items: 
       - /etc/bashrc
       - /etc/profile
+      - /etc/profile.d/cis.sh
   when: ncnrcis_config_umask
   tags:
       - level1
