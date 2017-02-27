@@ -240,6 +240,7 @@
       dest: /etc/rsyslog.conf
       regexp: "^kern"
       line: "kern.* /var/log/kern.log"
+  notify: restart rsyslog
   tags:
       - level1
       - level2
@@ -252,6 +253,7 @@
       dest: /etc/rsyslog.conf
       regexp: "^auth,user"
       line: "auth,user.* /var/log/messages"
+  notify: restart rsyslog
   tags:
       - level1
       - level2
@@ -264,6 +266,7 @@
       dest: /etc/rsyslog.conf
       regexp: "^daemon"
       line: "daemon.* /var/log/daemon.log"
+  notify: restart rsyslog
   tags:
       - level1
       - level2
@@ -276,6 +279,7 @@
       dest: /etc/rsyslog.conf
       regexp: "^syslog"
       line: "syslog.* /var/log/syslog"
+  notify: restart rsyslog
   tags:
       - level1
       - level2
@@ -288,6 +292,7 @@
       dest: /etc/rsyslog.conf
       regexp: "^lpr,news,uucp,local0,local1,local2,local3,local4,local5,local6"
       line: "lpr,news,uucp,local0,local1,local2,local3,local4,local5,local6.* /var/log/unused.log"
+  notify: restart rsyslog
   tags:
       - level1
       - level2
@@ -298,8 +303,10 @@
   file: 
      path: "{{ item }}" 
      mode: 0660
+     state: touch
      owner: root
      group: root
+  notify: restart rsyslog
   with_items:
      - /var/log/kern.log
      - /var/log/daemon.log
