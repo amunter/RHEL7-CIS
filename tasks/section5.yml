@@ -431,7 +431,7 @@
       state: present
       dest: "{{ item }}"
       regexp: '^umask'
-      line: 'umask 027'
+      line: 'umask 077'
   with_items: 
       - /etc/bashrc
       - /etc/profile

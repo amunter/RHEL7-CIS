@@ -54,6 +54,22 @@
       - patch
       - ncnr
 
+- name: "NCNR | Set daemon umask to 027 because tenable wants it that way"
+  lineinfile:
+      state: present
+      dest: "{{ item }}"
+      regexp: '^umask'
+      line: 'umask 027'
+  with_items: 
+      - /etc/sysconfig/init
+  when: ncnrcis_config_umask
+  tags:
+      - level1
+      - level2
+      - patch
+      - ncnr
+      - umask
+  
 - name: "NCNR | Ensure BigFix is installed"
   command: rpm -q BESAgent
   register: bes_check    
