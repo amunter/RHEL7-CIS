@@ -404,7 +404,7 @@
       - rule_5.4.1.3
 
 - name: "SCORED | 5.4.1.4 | PATCH | Ensure inactive password lock is 30 days or less"
-  command: usermod -D -f 30
+  command: useradd -D -f 30
   tags:
       - level1
       - level2
