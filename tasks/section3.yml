@@ -418,7 +418,8 @@
       permanent: true
       immediate: true
   when: rhel7cis_firewall == "firewalld"
-  with_items: {{ rhel7cis_firewall_services }}
+  notify: restart firewalld
+  with_items: ""{{ rhel7cis_firewall_services }}""
   tags:
       - level1
       - patch
