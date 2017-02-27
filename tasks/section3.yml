@@ -366,9 +366,9 @@
       - rule_3.6.1
 
 - name: "SCORED | 3.6.2 | PATCH | Ensure default deny firewall policy"
-  lineinfile: 
-      dest: /etc/firewalld/firewalld.conf 
-      regexp: "^DefaultZone" 
+  lineinfile:
+      dest: /etc/firewalld/firewalld.conf
+      regexp: "^DefaultZone"
       line: "DefaultZone=drop"
   when: rhel7cis_firewall == "firewalld"
   tags:
@@ -377,9 +377,9 @@
       - rule_3.6.2
 
 - name: "SCORED | 3.6.2 | PATCH | Ensure default deny firewall policy"
-  firewalld: 
-      state: enabled 
-      zone: drop 
+  firewalld:
+      state: enabled
+      zone: drop
       permanent: true
   when: rhel7cis_firewall == "firewalld"
   tags:
@@ -418,7 +418,7 @@
       permanent: true
       immediate: true
   when: rhel7cis_firewall == "firewalld"
-  with_items: rhel7cis_firewall_services
+  with_items: {{ rhel7cis_firewall_services }}
   tags:
       - level1
       - patch
