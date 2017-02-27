@@ -419,7 +419,7 @@
       immediate: true
   when: rhel7cis_firewall == "firewalld"
   notify: restart firewalld
-  with_items: ""{{ rhel7cis_firewall_services }}""
+  with_items: "{{ rhel7cis_firewall_services }}"
   tags:
       - level1
       - patch
