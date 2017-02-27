@@ -429,7 +429,7 @@
 - name: "SCORED | 5.4.4 | PATCH | Ensure default user umask is 027 or more restrictive"
   lineinfile:
       state: present
-      dest: "{{ items }}"
+      dest: "{{ item }}"
       regexp: '^umask'
       line: 'umask 027'
   with_items: 
