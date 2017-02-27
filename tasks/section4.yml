@@ -395,7 +395,7 @@
       - rule_4.2.4
 
 - name: "NOTSCORED | 4.3 | PATCH | Ensure logrotate is configured"
-   lineinfile: 
+  lineinfile: 
       state: present
       dest: /etc/logrotate.d/syslog
       regexp: "^/var/log/boot.log"

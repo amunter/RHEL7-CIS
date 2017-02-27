@@ -337,7 +337,7 @@
 
 - name: "SCORED | 5.3.2 | PATCH | Ensure lockout for failed password attempts is configured"
   copy: 
-      src: {{ item }}
+      src: "{{ item }}"
       dest: "/{{ item }}"
       owner: root
       group: root
@@ -430,7 +430,7 @@
 - name: "SCORED | 5.4.4 | PATCH | Ensure default user umask is 027 or more restrictive"
   lineinfile:
       state: present
-      dest: {{ items }}
+      dest: "{{ items }}"
       regexp: '^umask'
       line: 'umask 027'
   with_items: 
@@ -452,7 +452,7 @@
       - rule_5.5
 
 - name: "SCORED | 5.6 | PATCH | Ensure access to the su command is restricted"
-   lineinfile:
+  lineinfile:
       state: present
       dest: /etc/pam.d/su
       regexp: '^#auth\s+required\s+pam_wheel\.so'
