@@ -35,6 +35,7 @@
   with_items:
       - /etc/modprobe.d/CIS.conf
       - /etc/audit/auditd.conf
+      - /etc/default/useradd
   tags:
       - level1
       - patch

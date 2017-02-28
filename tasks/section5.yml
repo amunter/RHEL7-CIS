@@ -441,11 +441,10 @@
       - rule_5.4.4
 
 - name: "SCORED | 5.4.4 | PATCH | Ensure default user umask is 027 or more restrictive"
-  lineinfile:
-      state: present
+  replace:
       dest: "{{ item }}"
-      regexp: '^umask'
-      line: 'umask 077'
+      regexp: '(^\s+umask)\s+\d\d\d'
+      line: '\1 027'
   with_items: 
       - /etc/bashrc
       - /etc/profile
