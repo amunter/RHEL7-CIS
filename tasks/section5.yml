@@ -444,7 +444,7 @@
   replace:
       dest: "{{ item }}"
       regexp: '(^\s+umask)\s+\d\d\d'
-      line: '\1 027'
+      replace: '\1 027'
   with_items: 
       - /etc/bashrc
       - /etc/profile
