@@ -184,7 +184,7 @@
       - patch
       - ncnr
 
-- name: "NCNR | Install ClamAV"
+- name: "NCNR | Ensure ClamAV is installed"
   yum:
       name: 
         - clamav
@@ -193,6 +193,16 @@
       enablerepo: epel
       state: latest
   register: just_installed_clamav
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Ensure Python semanage libraries are installed as needed to configure ClamAV"
+  yum:
+      name: libsemanage-python
+      state: latest
   tags:
       - level1
       - clamav
@@ -211,20 +221,21 @@
       - ncnr
 
 - name: "NCNR | Edit ClamAV config files"
-  lineinfile:
-      file: "{{ item.file }}"
+  replace:
+      dest: "{{ item.file }}"
       regexp: "{{ item.exp }}"
-      line: "{{ item.to }}"
-  with_items: 
-      - { file: '/etc/clamd.d/scan.conf', exp: '^Example(.*)$', to: '#Example\1' }
+      replace: "{{ item.to }}"
+  with_items:
+      - { file: '/etc/clamd.d/scan.conf', exp: '^Example(.*)', to: '#Example\1' }
       - { file: '/etc/freshclam.conf', exp: '^Example(.*)', to: '#Example\1' }
-      - { file: '/etc/clamd.d/scan.conf', exp: '^#LocalSocket(.*)$', to: 'LocalSocket\1' }
-      - { file: '/etc/sysconfig/freshclam', exp: '^\s*FRESHCLAM_DELAY(.*)$', to: '#FRESHCLAM_DELAY\1' }
+      - { file: '/etc/clamd.d/scan.conf', exp: '^#LocalSocket /var/run(.*)$', to: 'LocalSocket /var/run\1' }
+      - { file: '/etc/sysconfig/freshclam', exp: '^(FRESHCLAM_DELAY.*)', to: '#\1' }
   tags:
       - level1
       - clamav
       - patch
       - ncnr
+
 
 - name: "NCNR | Get fresh ClamAV definitions for the first time"
   command: /bin/freshclam --quiet -l /var/log/freshclam.log
@@ -235,7 +246,7 @@
       - patch
       - ncnr
 
-- name: "NCNR | Start the ClamAV Scanning service"
+- name: "NCNR | Ensure the ClamAV Scanning service is started and enabled"
   service:
       name: clamd@scan
       state: started
