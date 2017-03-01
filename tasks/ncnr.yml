@@ -13,7 +13,7 @@
     - patch
     - ncnr
 
-- name: Set tenscan user RSA key
+- name: "NCNR | Set tenscan user RSA key"
   authorized_key:
       user: tenscan
       key: http://network.ncnr.nist.gov/tenscan_rsa.pub
@@ -24,6 +24,15 @@
     - tenscan
     - patch
     - ncnr
+
+- name: "NCNR | Install mail client so that system status messages can be sent"
+  yum:
+      name: mailx
+      state: latest
+  tags:
+      - level1
+      - patch
+      - ncnr
 
 - name: "NCNR | Set files to 644 so tenable can read them"
   file:
@@ -36,6 +45,7 @@
       - /etc/modprobe.d/CIS.conf
       - /etc/audit/auditd.conf
       - /etc/default/useradd
+      - /var/spool/cron/root
   tags:
       - level1
       - patch
@@ -50,6 +60,7 @@
       mode: 0755
   with_items:
       - /etc/audit
+      - /var/spool/cron
   tags:
       - level1
       - patch
@@ -148,5 +159,100 @@
   tags:
       - level1
       - bigfix
+      - patch
+      - ncnr
+
+- name: "NCNR | Install EPEL repository"
+  yum:
+      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      state: present
+  tags:
+      - level1
+      - epel
+      - patch
+      - ncnr
+
+- name: "NCNR | Manage EPEL Repository settings"
+      name: epel
+      enabled: no
+      gpgcheck: yes
+  tags:
+      - level1
+      - epel
+      - patch
+      - ncnr
+
+- name: "NCNR | Install ClamAV"
+  yum:
+      name: 
+        - clamav
+        - clamav-scanner-systemd
+        - clamav-update
+      enablerepo: epel
+      state: latest
+  register: just_installed_clamav
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Give ClamAV access to all files in SELinux"
+  seboolean:
+      name: antivirus_can_scan_system
+      state: yes
+      persistent: yes
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Edit ClamAV config files"
+  lineinfile:
+      file: "{{ item.file }}"
+      regexp: "{{ item.exp }}"
+      line: "{{ item.to }}"
+  with_items: 
+      - { file: '/etc/clamd.d/scan.conf', exp: '^Example(.*)$', to: '#Example\1' }
+      - { file: '/etc/freshclam.conf', exp: '^Example(.*)', to: '#Example\1' }
+      - { file: '/etc/clamd.d/scan.conf', exp: '^#LocalSocket(.*)$', to: 'LocalSocket\1' }
+      - { file: '/etc/sysconfig/freshclam', exp: '^\s*FRESHCLAM_DELAY(.*)$', to: '#FRESHCLAM_DELAY\1' }
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Get fresh ClamAV definitions for the first time"
+  command: /bin/freshclam --quiet -l /var/log/freshclam.log
+  when: just_installed_clamav.changed
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Start the ClamAV Scanning service"
+  service:
+      name: clamd@scan
+      state: started
+      enabled: yes
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Copy the file for daily /home scans and weekly / scans"
+  copy:
+      src: etc/cron.daily/clamscan.sh
+      dest: /etc/cron.daily/clamscan.sh
+      owner: root
+      group: root
+      mode: 0644
+  tags:
+      - level1
+      - clamav
       - patch
       - ncnr
