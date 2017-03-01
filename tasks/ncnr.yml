@@ -173,6 +173,7 @@
       - ncnr
 
 - name: "NCNR | Manage EPEL Repository settings"
+  yum_repository:
       name: epel
       enabled: no
       gpgcheck: yes
