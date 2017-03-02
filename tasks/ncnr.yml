@@ -95,7 +95,8 @@
 - name: "NCNR | Copy bigfix install file if x86_64"
   unarchive:
       src: http://network.ncnr.nist.gov/bigfix-rhe5.x86_64.tar
-      dest: /tmp/bigfix.tar
+      dest: /tmp/
+      remote_src: true
   when: (ansible_architecture == "x86_64" and bes_check.rc == 1) and ncnrcis_install_bigfix
   tags:
       - level1
@@ -106,7 +107,8 @@
 - name: "NCNR | Copy bigfix install file if i386"
   unarchive:
       src: http://network.ncnr.nist.gov/bigfix-rhe5.i686.tar
-      dest: /tmp/bigfix.tar
+      dest: /tmp/
+      remote_src: true
   when: (ansible_architecture == "i386" and bes_check.rc == 1) and ncnrcis_install_bigfix
   tags:
       - level1
