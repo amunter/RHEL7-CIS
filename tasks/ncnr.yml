@@ -221,7 +221,6 @@
   with_items:
       - { file: '/etc/clamd.d/scan.conf', exp: '^Example(.*)', to: '#Example\1' }
       - { file: '/etc/freshclam.conf', exp: '^Example(.*)', to: '#Example\1' }
-      - { file: '/etc/freshclam.conf', exp: '^#DatabaseOwner clamupdate', to: 'DatabaseOwner clamscan' }
       - { file: '/etc/clamd.d/scan.conf', exp: '^#LocalSocket /var/run(.*)$', to: 'LocalSocket /var/run\1' }
       - { file: '/etc/clamd.d/scan.conf', exp: '^#FixStaleSocket(.*)$', to: 'FixStaleSocket\1' }
       - { file: '/etc/sysconfig/freshclam', exp: '^(FRESHCLAM_DELAY.*)', to: '#\1' }
@@ -231,6 +230,16 @@
       - patch
       - ncnr
 
+- name: "NCNR | Add clamscan to the clamupdate group so it can read the definitions files"
+  user: 
+      name: clamscan
+      groups: clamupdate
+      append: yes
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
 
 - name: "NCNR | Get fresh ClamAV definitions for the first time"
   command: /bin/freshclam --quiet -l /var/log/freshclam.log
