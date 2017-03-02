@@ -93,12 +93,9 @@
       - ncnr
 
 - name: "NCNR | Copy bigfix install file if x86_64"
-  copy:
-      src: /home/ncnradmin/linuxinstall/bigfix-rhe5.x86_64.tar
+  unarchive:
+      src: http://network.ncnr.nist.gov/bigfix-rhe5.x86_64.tar
       dest: /tmp/bigfix.tar
-      owner: root
-      group: root
-      mode: 0644
   when: (ansible_architecture == "x86_64" and bes_check.rc == 1) and ncnrcis_install_bigfix
   tags:
       - level1
@@ -107,24 +104,10 @@
       - ncnr
 
 - name: "NCNR | Copy bigfix install file if i386"
-  copy:
-      src: /home/ncnradmin/linuxinstall/bigfix-rhe5.i686.tar
+  unarchive:
+      src: http://network.ncnr.nist.gov/bigfix-rhe5.i686.tar
       dest: /tmp/bigfix.tar
-      owner: root
-      group: root
-      mode: 0644
   when: (ansible_architecture == "i386" and bes_check.rc == 1) and ncnrcis_install_bigfix
-  tags:
-      - level1
-      - bigfix
-      - patch
-      - ncnr
-
-- name: "NCNR | Untar bigfix"
-  command: tar xvf /tmp/bigfix.tar
-  args:   
-      chdir: /tmp/
-  when: (bes_check.rc == 1 and ncnrcis_install_bigfix)
   tags:
       - level1
       - bigfix
@@ -143,7 +126,12 @@
       - ncnr
 
 - name: "NCNR | Delete bigfix install files"
-  command: rm -rf /tmp/bigfix /tmp/bigfix.tar
+  file:
+      dest: "{{ item }}"
+      state: absent
+  with_items:
+      - /tmp/bigfix
+      - /tmp/bigfix.tar
   when: (bes_check.rc == 1 and ncnrcis_install_bigfix)
   tags:
       - level1
@@ -211,9 +199,12 @@
 
 - name: "NCNR | Give ClamAV access to all files in SELinux"
   seboolean:
-      name: antivirus_can_scan_system
+      name: "{{ item }}"
       state: yes
       persistent: yes
+  with_items:
+      - antivirus_can_scan_system
+      - clamd_use_jit
   tags:
       - level1
       - clamav
@@ -228,7 +219,9 @@
   with_items:
       - { file: '/etc/clamd.d/scan.conf', exp: '^Example(.*)', to: '#Example\1' }
       - { file: '/etc/freshclam.conf', exp: '^Example(.*)', to: '#Example\1' }
+      - { file: '/etc/freshclam.conf', exp: '^#DatabaseOwner clamupdate', to: 'DatabaseOwner clamscan' }
       - { file: '/etc/clamd.d/scan.conf', exp: '^#LocalSocket /var/run(.*)$', to: 'LocalSocket /var/run\1' }
+      - { file: '/etc/clamd.d/scan.conf', exp: '^#FixStaleSocket(.*)$', to: 'FixStaleSocket\1' }
       - { file: '/etc/sysconfig/freshclam', exp: '^(FRESHCLAM_DELAY.*)', to: '#\1' }
   tags:
       - level1
