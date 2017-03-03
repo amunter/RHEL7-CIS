@@ -47,7 +47,7 @@ rhel7cis_allow_autofs: false
 rhel7cis_xinetd_required: false
 
 # RedHat Satellite Subscription items
-rhel7cis_rhnsd_required: true 
+rhel7cis_rhnsd_required: false
 
 # 1.4.2 Bootloader password
 
