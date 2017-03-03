@@ -41,3 +41,7 @@
   service:
       name: rsyslog
       state: restarted
+
+- name: restart xinetd
+  become: yes
+  shell: kill -USR2 `pidof xinetd`
