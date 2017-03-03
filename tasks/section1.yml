@@ -701,5 +701,6 @@
   tags:
       - level1
       - level2
+      - yumupdate
       - patch
       - rule_1.8
