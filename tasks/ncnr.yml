@@ -261,13 +261,26 @@
       - patch
       - ncnr
 
+- name: "NCNR | Make a directory to store ClamAV scan log files"
+  file: 
+      dest: /var/log/clamav
+      owner: clamscan
+      group: clamscan
+      state: directory
+      mode: 0755
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
 - name: "NCNR | Copy the file for daily /home scans and weekly / scans"
   copy:
       src: etc/cron.daily/clamscan.sh
       dest: /etc/cron.daily/clamscan.sh
       owner: root
       group: root
-      mode: 0644
+      mode: 0755
   tags:
       - level1
       - clamav
