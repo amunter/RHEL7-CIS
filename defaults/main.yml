@@ -44,7 +44,7 @@ rhel7cis_net_snmp: false
 rhel7cis_allow_autofs: false
 
 # xinetd required
-rhel7cis_xinetd_required: false
+rhel7cis_xinetd_required: true
 
 # RedHat Satellite Subscription items
 rhel7cis_rhnsd_required: false
@@ -77,7 +77,7 @@ rhel7cis_aide_cron:
 rhel7cis_selinux_pol: targeted
 
 # Set to 'true' if X Windows is needed in your environment
-rhel7cis_xwindows_required: no
+rhel7cis_xwindows_required: yes
 
 rhel7cis_openldap_clients_required: false
 rhel7cis_telnet_required: false
@@ -90,10 +90,8 @@ rhel7cis_time_synchronization: chrony
 #rhel7cis_time_Synchronization: ntp
 
 rhel7cis_time_synchronization_servers:
-    - 0.pool.ntp.org
-    - 1.pool.ntp.org
-    - 2.pool.ntp.org
-    - 3.pool.ntp.org
+    - time-b.nist.gov
+    - time-b.timefreq.bldrdoc.gov
 
 # 3.4.2 | PATCH | Ensure /etc/hosts.allow is configured
 rhel7cis_host_allow:
