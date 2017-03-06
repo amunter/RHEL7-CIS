@@ -1,6 +1,19 @@
 ---
 # NCNR Specific Tasks
 
+- name: "NCNR | Allow incoming pings"
+  firewalld:
+      rich_rule: 'ipv4 filter IN_drop_allow 0 -p icmp -m icmp --icmp-type 8 -j ACCEPT'
+      permanent: true
+      state: enabled
+  notify: restart firewalld
+  when: ncnrcis_allow_pings
+  tags:
+    - level1
+    - pings
+    - patch
+    - ncnr
+
 - name: "NCNR | Create tenscan user"
   user:
       name: tenscan
