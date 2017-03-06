@@ -107,7 +107,7 @@ rhel7cis_firewall_services:
 # NCNR specific variables
 ncnrcis_install_tenscan: true
 ncnrcis_install_bigfix: true
-ncnrcis_config_umask: true
+ncnrcis_config_umask: false
 ncnrcis_permit_root_login: "yes"
 ncnrcis_ssh_idle_time: 900
 ncnrcis_min_passwd_length: 12
