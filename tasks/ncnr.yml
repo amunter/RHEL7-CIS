@@ -240,6 +240,19 @@
       - patch
       - ncnr
 
+- name: "NCNR | Make sure freshclam can write to its own log file"
+  file: 
+      dest: /var/log/freshclam.log
+      owner: clamupdate
+      group: clamupdate
+      mode: 0640
+      state: touch
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
 - name: "NCNR | Add clamscan to the clamupdate group so it can read the definitions files"
   user: 
       name: clamscan
