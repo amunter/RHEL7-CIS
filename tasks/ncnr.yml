@@ -2,12 +2,7 @@
 # NCNR Specific Tasks
 
 - name: "NCNR | Allow incoming pings"
-  firewalld:
-      rich_rule: 'ipv4 filter IN_drop_allow 0 -p icmp -m icmp --icmp-type 8 -j ACCEPT'
-      permanent: true
-      state: enabled
-      zone: drop
-      immediate: true
+  shell: 'firewall-cmd --permanent  --direct  --add-rule ipv4 filter IN_drop_allow 0 -p icmp -m icmp --icmp-type 8 -j ACCEPT'
   notify: restart firewalld
   when: ncnrcis_allow_pings
   tags:
