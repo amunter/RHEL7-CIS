@@ -11,7 +11,7 @@
     - patch
     - ncnr
 
-- name: "NCNR | Firewall config for daq computers 1/2"
+- name: "NCNR | Firewall config for DAQ computers 1/2"
   firewalld:
       zone: drop
       port: "{{ item }}"
@@ -27,10 +27,11 @@
       - 8080/udp
   tags:
       - level1
+      - daq
       - patch
       - ncnr
 
-- name: "NCNR | Firewall config for daq computers 2/2"
+- name: "NCNR | Firewall config for DAQ computers 2/2"
   firewalld:
       zone: drop
       service: "{{ item }}"
@@ -45,6 +46,27 @@
       - dhcpv6-client
   tags:
       - level1
+      - daq
+      - patch
+      - ncnr
+
+- name: "NCNR | Add zerocice repo for DAQ computers"
+  yum_repository:
+      name: "{{ item.name }}"
+      description: "{{ item.description }}"
+      file: zeroc-ice-el7
+      baseurl: "{{ item.baseurl }}"
+      enabled: no
+      gpgcheck: yes
+      gpgkey: https://zeroc.com/download/GPG-KEY-zeroc-release
+  when: ncnrcis_is_daq
+  with_items:
+      - { name: 'zeroc-ice-el7', description: 'ZeroC Ice for el7', baseurl: 'https://zeroc.com/download/rpm/el$releasever/$basearch'}
+      - { name: 'zeroc-ice-el7-noarch', description: 'ZeroC Ice for el7 (noarch)', baseurl: 'https://zeroc.com/download/rpm/el$releasever/noarch'}
+      - { name: 'zeroc-ice-el7-src', description: 'ZeroC Ice for el7 (SRPMS)', baseurl: 'https://zeroc.com/download/rpm/el$releasever/SRPMS'}
+  tags:
+      - level1
+      - daq
       - patch
       - ncnr
 
