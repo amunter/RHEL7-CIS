@@ -11,6 +11,43 @@
     - patch
     - ncnr
 
+- name: "NCNR | Firewall config for daq computers 1/2"
+  firewalld:
+      zone: drop
+      port: "{{ item }}"
+      state: enabled
+      permanent: true
+      immediate: true
+  notify: restart firewalld
+  when: ncnrcis_is_daq
+  with_items: 
+      - 9999/tcp
+      - 1232/tcp
+      - 1010/tcp
+      - 8080/udp
+  tags:
+      - level1
+      - patch
+      - ncnr
+
+- name: "NCNR | Firewall config for daq computers 2/2"
+  firewalld:
+      zone: drop
+      service: "{{ item }}"
+      state: enabled
+      permanent: true
+      immediate: true
+  notify: restart firewalld
+  when: ncnrcis_is_daq
+  with_items:
+      - ssh
+      - vnc-server
+      - dhcpv6-client
+  tags:
+      - level1
+      - patch
+      - ncnr
+
 - name: "NCNR | Create tenscan user"
   user:
       name: tenscan
@@ -18,10 +55,10 @@
       state: present
   when: ncnrcis_install_tenscan
   tags: 
-    - level1
-    - tenscan
-    - patch
-    - ncnr
+      - level1
+      - tenscan
+      - patch
+      - ncnr
 
 - name: "NCNR | Set tenscan user RSA key"
   authorized_key:
@@ -30,10 +67,10 @@
       state: present
   when: ncnrcis_install_tenscan
   tags: 
-    - level1
-    - tenscan
-    - patch
-    - ncnr
+      - level1
+      - tenscan
+      - patch
+      - ncnr
 
 - name: "NCNR | Install mail client so that system status messages can be sent"
   yum:
