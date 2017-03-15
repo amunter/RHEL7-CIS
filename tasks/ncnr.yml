@@ -61,9 +61,9 @@
       gpgkey: https://zeroc.com/download/GPG-KEY-zeroc-release
   when: ncnrcis_is_daq
   with_items:
-      - { name: 'zeroc-ice-el7', description: 'ZeroC Ice for el7', baseurl: 'https://zeroc.com/download/rpm/el$releasever/$basearch'}
-      - { name: 'zeroc-ice-el7-noarch', description: 'ZeroC Ice for el7 (noarch)', baseurl: 'https://zeroc.com/download/rpm/el$releasever/noarch'}
-      - { name: 'zeroc-ice-el7-src', description: 'ZeroC Ice for el7 (SRPMS)', baseurl: 'https://zeroc.com/download/rpm/el$releasever/SRPMS'}
+      - { name: 'zeroc-ice-el7', description: 'ZeroC Ice for el7', baseurl: 'https://zeroc.com/download/rpm/el7/$basearch'}
+      - { name: 'zeroc-ice-el7-noarch', description: 'ZeroC Ice for el7 (noarch)', baseurl: 'https://zeroc.com/download/rpm/el7/noarch'}
+      - { name: 'zeroc-ice-el7-src', description: 'ZeroC Ice for el7 (SRPMS)', baseurl: 'https://zeroc.com/download/rpm/el7/SRPMS'}
   tags:
       - level1
       - daq
