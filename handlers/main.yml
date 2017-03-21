@@ -47,3 +47,7 @@
   service:
         name: xinetd
         state: restarted
+
+- name: reload dconf
+  become: yes
+  command: dconf update
