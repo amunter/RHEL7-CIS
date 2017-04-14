@@ -24,6 +24,7 @@
       - 9999/tcp
       - 1232/tcp
       - 1010/tcp
+      - 12050/tcp
       - 8080/udp
   tags:
       - level1
@@ -49,6 +50,18 @@
       - daq
       - patch
       - ncnr
+
+- name: "NCNR | 5.2.4 | PATCH | Ensure SSH X11 forwarding is enabled, we like it"
+  lineinfile:
+      state: present
+      dest: /etc/ssh/sshd_config
+      regexp: '^X11Forwarding'
+      line: 'X11Forwarding yes'
+  tags:
+      - level1
+      - level2
+      - patch
+      - rule_5.2.4
 
 - name: "NCNR | Add zerocice repo for DAQ computers"
   yum_repository:
@@ -112,9 +125,12 @@
       mode: 0644
   with_items:
       - /etc/modprobe.d/CIS.conf
+      - /etc/modprobe.d/usgcb-blacklist.conf
       - /etc/audit/auditd.conf
+      - /etc/audit/audit.rules
       - /etc/default/useradd
       - /var/spool/cron/root
+      - /etc/ssh/sshd_config
   tags:
       - level1
       - patch
