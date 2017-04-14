@@ -426,6 +426,21 @@
       - rule_3.6.5
 
 - name: "SCORED | 3.6.5 | PATCH | Ensure firewall rules exist for all open ports"
+  firewalld:
+      service: "{{ item }}"
+      state: enabled
+      zone: drop
+      permanent: true
+      immediate: true
+  when: rhel7cis_firewall == "firewalld"
+  notify: restart firewalld
+  with_items: "{{ rhel7cis_firewall_services }}"
+  tags:
+      - level1
+      - patch
+      - rule_3.6.5
+
+- name: "SCORED | 3.6.5 | PATCH | Ensure firewall rules exist for all open ports"
   command: /bin/true
   when: rhel7cis_firewall == "iptables"
   tags:

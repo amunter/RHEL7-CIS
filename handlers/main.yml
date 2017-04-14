@@ -45,8 +45,8 @@
 - name: restart xinetd
   become: yes
   service:
-        name: xinetd
-        state: restarted
+      name: xinetd
+      state: restarted
 
 - name: reload dconf
   become: yes
