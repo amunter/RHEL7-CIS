@@ -50,7 +50,6 @@ rhel7cis_xinetd_required: true
 rhel7cis_rhnsd_required: false
 
 # 1.4.2 Bootloader password
-
 rhel7cis_bootloader_password: random
 rhel7cis_set_boot_pass: false
 
@@ -117,3 +116,15 @@ ncnrcis_is_daq: false
 # Warning Banner Content (issue, issue.net, motd)
 rhel7cis_warning_banner: "You are accessing a U.S. Government information system, which includes: 1) this computer, 2) this computer network, 3) all computers  connected to this network, and 4) all devices and storage media attached to this network or to a computer on this network. You understand and consent to the following: you may access this information system for authorized use only; you have no reasonable expectation of privacy regarding any communication of data transiting or stored on this information system; at any time and for any lawful Government purpose, the Government may monitor, intercept, and search and seize any communication or data transiting or stored on this information system; and any communications or data transiting or stored on this information system may be disclosed or used for any lawful Government purpose."
 # End Banner
+
+rhel7cis_sshd:
+    clientalivecountmax: 3
+    # - make sure you understand the precedence when working with these values!!
+    #allowusers:
+    #allowgroups: systems dba
+    #denyusers:
+    #denygroups:
+
+# Syslog system
+rhel7cis_syslog: rsyslog
+#rhel7cis_syslog: syslog-ng

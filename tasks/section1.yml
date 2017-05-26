@@ -459,6 +459,7 @@
 
 - name: "NOTSCORED | 1.4.3 | PATCH | Ensure authentication required for single user mode"
   command: /bin/true
+  changed_when: no
   tags:
       - level1
       - level2
@@ -467,6 +468,7 @@
 
 - name: "NOTSCORED | 1.4.3 | PATCH | Ensure authentication required for single user mode"
   command: /bin/true
+  changed_when: no
   tags:
       - level1
       - level2
