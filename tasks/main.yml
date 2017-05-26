@@ -46,6 +46,11 @@
   become: yes
   when: rhel7cis_section6
 
+- include: ncnr.yml
+  become: yes
+  tags:
+      - ncnr
+
 - include: post.yml
   become: yes
   tags:

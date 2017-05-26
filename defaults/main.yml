@@ -44,7 +44,7 @@ rhel7cis_net_snmp: false
 rhel7cis_allow_autofs: false
 
 # xinetd required
-rhel7cis_xinetd_required: false
+rhel7cis_xinetd_required: true
 
 # RedHat Satellite Subscription items
 rhel7cis_rhnsd_required: false
@@ -76,7 +76,7 @@ rhel7cis_aide_cron:
 rhel7cis_selinux_pol: targeted
 
 # Set to 'true' if X Windows is needed in your environment
-rhel7cis_xwindows_required: no
+rhel7cis_xwindows_required: yes
 
 rhel7cis_openldap_clients_required: false
 rhel7cis_telnet_required: false
@@ -89,16 +89,12 @@ rhel7cis_time_synchronization: chrony
 #rhel7cis_time_Synchronization: ntp
 
 rhel7cis_time_synchronization_servers:
-    - 0.pool.ntp.org
-    - 1.pool.ntp.org
-    - 2.pool.ntp.org
-    - 3.pool.ntp.org
+    - time-b.nist.gov
+    - time-b.timefreq.bldrdoc.gov
 
 # 3.4.2 | PATCH | Ensure /etc/hosts.allow is configured
 rhel7cis_host_allow:
-    - "10.0.0.0/255.0.0.0"
-    - "172.16.0.0/255.240.0.0"
-    - "192.168.0.0/255.255.0.0"
+    - "129.6.0.0/255.255.0.0"
 
 rhel7cis_firewall: firewalld
 #rhel7cis_firewall: iptables
@@ -107,9 +103,19 @@ rhel7cis_firewall_services:
     - ssh
     - dhcpv6-client
 
+# NCNR specific variables
+ncnrcis_install_tenscan: true
+ncnrcis_install_bigfix: true
+ncnrcis_config_umask: false
+ncnrcis_permit_root_login: "yes"
+ncnrcis_ssh_idle_time: 900
+ncnrcis_min_passwd_length: 12
+ncnrcis_allow_pings: true
+ncnrcis_is_daq: false
+
 # Warning Banner Content (issue, issue.net, motd)
-rhel7cis_warning_banner: |
-    Authorized uses only. All activity may be monitored and reported.
+rhel7cis_warning_banner: "You are accessing a U.S. Government information system, which includes: 1) this computer, 2) this computer network, 3) all computers  connected to this network, and 4) all devices and storage media attached to this network or to a computer on this network. You understand and consent to the following: you may access this information system for authorized use only; you have no reasonable expectation of privacy regarding any communication of data transiting or stored on this information system; at any time and for any lawful Government purpose, the Government may monitor, intercept, and search and seize any communication or data transiting or stored on this information system; and any communications or data transiting or stored on this information system may be disclosed or used for any lawful Government purpose."
+
 # End Banner
 
 rhel7cis_sshd:

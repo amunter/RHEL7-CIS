@@ -1,0 +1,386 @@
+---
+# NCNR Specific Tasks
+
+- name: "NCNR | Allow incoming pings"
+  shell: 'firewall-cmd --permanent  --direct  --add-rule ipv4 filter IN_drop_allow 0 -p icmp -m icmp --icmp-type 8 -j ACCEPT'
+  notify: restart firewalld
+  when: ncnrcis_allow_pings
+  tags:
+    - level1
+    - pings
+    - patch
+    - ncnr
+
+- name: "NCNR | Firewall config for DAQ computers 1/2"
+  firewalld:
+      zone: drop
+      port: "{{ item }}"
+      state: enabled
+      permanent: true
+      immediate: true
+  notify: restart firewalld
+  when: ncnrcis_is_daq
+  with_items: 
+      - 9999/tcp
+      - 1232/tcp
+      - 1010/tcp
+      - 12050/tcp
+      - 8080/udp
+  tags:
+      - level1
+      - daq
+      - patch
+      - ncnr
+
+- name: "NCNR | Firewall config for DAQ computers 2/2"
+  firewalld:
+      zone: drop
+      service: "{{ item }}"
+      state: enabled
+      permanent: true
+      immediate: true
+  notify: restart firewalld
+  when: ncnrcis_is_daq
+  with_items:
+      - ssh
+      - vnc-server
+      - dhcpv6-client
+  tags:
+      - level1
+      - daq
+      - patch
+      - ncnr
+
+- name: "NCNR | 5.2.4 | PATCH | Ensure SSH X11 forwarding is enabled, we like it"
+  lineinfile:
+      state: present
+      dest: /etc/ssh/sshd_config
+      regexp: '^X11Forwarding'
+      line: 'X11Forwarding yes'
+  tags:
+      - level1
+      - level2
+      - patch
+      - rule_5.2.4
+
+- name: "NCNR | Add zerocice repo for DAQ computers"
+  yum_repository:
+      name: "{{ item.name }}"
+      description: "{{ item.description }}"
+      file: zeroc-ice-el7
+      baseurl: "{{ item.baseurl }}"
+      enabled: no
+      gpgcheck: yes
+      gpgkey: https://zeroc.com/download/GPG-KEY-zeroc-release
+  when: ncnrcis_is_daq
+  with_items:
+      - { name: 'zeroc-ice-el7', description: 'ZeroC Ice for el7', baseurl: 'https://zeroc.com/download/rpm/el7/$basearch'}
+      - { name: 'zeroc-ice-el7-noarch', description: 'ZeroC Ice for el7 (noarch)', baseurl: 'https://zeroc.com/download/rpm/el7/noarch'}
+      - { name: 'zeroc-ice-el7-src', description: 'ZeroC Ice for el7 (SRPMS)', baseurl: 'https://zeroc.com/download/rpm/el7/SRPMS'}
+  tags:
+      - level1
+      - daq
+      - patch
+      - ncnr
+
+- name: "NCNR | Create tenscan user"
+  user:
+      name: tenscan
+      groups: wheel
+      state: present
+  when: ncnrcis_install_tenscan
+  tags: 
+      - level1
+      - tenscan
+      - patch
+      - ncnr
+
+- name: "NCNR | Set tenscan user RSA key"
+  authorized_key:
+      user: tenscan
+      key: http://network.ncnr.nist.gov/tenscan_rsa.pub
+      state: present
+  when: ncnrcis_install_tenscan
+  tags: 
+      - level1
+      - tenscan
+      - patch
+      - ncnr
+
+- name: "NCNR | Install mail client so that system status messages can be sent"
+  yum:
+      name: mailx
+      state: latest
+  tags:
+      - level1
+      - patch
+      - ncnr
+
+- name: "NCNR | Set files to 644 so tenable can read them"
+  file:
+      dest: "{{ item }}"
+      state: file
+      owner: root
+      group: root
+      mode: 0644
+  with_items:
+      - /etc/modprobe.d/CIS.conf
+      - /etc/modprobe.d/usgcb-blacklist.conf
+      - /etc/audit/auditd.conf
+      - /etc/audit/audit.rules
+      - /etc/default/useradd
+      - /var/spool/cron/root
+      - /etc/ssh/sshd_config
+  tags:
+      - level1
+      - patch
+      - ncnr
+
+- name: "NCNR | Set directories to 755 so tenable can read them"
+  file:
+      dest: "{{ item }}"
+      state: directory
+      owner: root
+      group: root
+      mode: 0755
+  with_items:
+      - /etc/audit
+      - /var/spool/cron
+  tags:
+      - level1
+      - patch
+      - ncnr
+
+- name: "NCNR | Set daemon umask to 027 because tenable wants it that way"
+  lineinfile:
+      state: present
+      dest: "{{ item }}"
+      regexp: '^umask'
+      line: 'umask 027'
+  with_items: 
+      - /etc/sysconfig/init
+  when: ncnrcis_config_umask
+  tags:
+      - level1
+      - level2
+      - patch
+      - ncnr
+      - umask
+  
+- name: "NCNR | Ensure BigFix is installed"
+  command: rpm -q BESAgent
+  register: bes_check    
+  ignore_errors: yes
+  tags:
+      - level1
+      - bigfix
+      - patch
+      - ncnr
+
+- name: "NCNR | Copy bigfix install file if x86_64"
+  unarchive:
+      src: http://network.ncnr.nist.gov/bigfix-rhe5.x86_64.tar
+      dest: /tmp/
+      remote_src: true
+  when: (ansible_architecture == "x86_64" and bes_check.rc == 1) and ncnrcis_install_bigfix
+  tags:
+      - level1
+      - bigfix
+      - patch
+      - ncnr
+
+- name: "NCNR | Copy bigfix install file if i386"
+  unarchive:
+      src: http://network.ncnr.nist.gov/bigfix-rhe5.i686.tar
+      dest: /tmp/
+      remote_src: true
+  when: (ansible_architecture == "i386" and bes_check.rc == 1) and ncnrcis_install_bigfix
+  tags:
+      - level1
+      - bigfix
+      - patch
+      - ncnr
+
+- name: "NCNR | Runs bigfix install script"
+  command: /tmp/bigfix/NIST_Installation_Script.sh
+  args:   
+      chdir: /tmp/bigfix/
+  when: (bes_check.rc == 1 and ncnrcis_install_bigfix)
+  tags:
+      - level1
+      - bigfix
+      - patch
+      - ncnr
+
+- name: "NCNR | Delete bigfix install files"
+  file:
+      dest: "{{ item }}"
+      state: absent
+  with_items:
+      - /tmp/bigfix
+      - /tmp/bigfix.tar
+  when: (bes_check.rc == 1 and ncnrcis_install_bigfix)
+  tags:
+      - level1
+      - bigfix
+      - patch
+      - ncnr
+
+- name: "NCNR | Ensure BigFix is running"
+  service:
+      name: besclient
+      state: started
+      enabled: yes
+  tags:
+      - level1
+      - bigfix
+      - patch
+      - ncnr
+
+- name: "NCNR | Install EPEL repository"
+  yum:
+      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      state: present
+  tags:
+      - level1
+      - epel
+      - patch
+      - ncnr
+
+- name: "NCNR | Manage EPEL Repository settings"
+  ini_file:
+      dest: /etc/yum.repos.d/epel.repo
+      section: epel
+      option: enabled
+      value: '0'
+  tags:
+      - level1
+      - epel
+      - patch
+      - ncnr
+
+- name: "NCNR | Ensure ClamAV is installed"
+  yum:
+      name: 
+        - clamav
+        - clamav-scanner-systemd
+        - clamav-update
+      enablerepo: epel
+      state: latest
+  register: just_installed_clamav
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Ensure Python semanage libraries are installed as needed to configure ClamAV"
+  yum:
+      name: libsemanage-python
+      state: latest
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Give ClamAV access to all files in SELinux"
+  seboolean:
+      name: "{{ item }}"
+      state: yes
+      persistent: yes
+  with_items:
+      - antivirus_can_scan_system
+      - clamd_use_jit
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Edit ClamAV config files"
+  replace:
+      dest: "{{ item.file }}"
+      regexp: "{{ item.exp }}"
+      replace: "{{ item.to }}"
+  with_items:
+      - { file: '/etc/clamd.d/scan.conf', exp: '^Example(.*)', to: '#Example\1' }
+      - { file: '/etc/freshclam.conf', exp: '^Example(.*)', to: '#Example\1' }
+      - { file: '/etc/clamd.d/scan.conf', exp: '^#LocalSocket /var/run(.*)$', to: 'LocalSocket /var/run\1' }
+      - { file: '/etc/clamd.d/scan.conf', exp: '^#FixStaleSocket(.*)$', to: 'FixStaleSocket\1' }
+      - { file: '/etc/sysconfig/freshclam', exp: '^(FRESHCLAM_DELAY.*)', to: '#\1' }
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Make sure freshclam can write to its own log file"
+  file: 
+      dest: /var/log/freshclam.log
+      owner: clamupdate
+      group: clamupdate
+      mode: 0640
+      state: touch
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Add clamscan to the clamupdate group so it can read the definitions files"
+  user: 
+      name: clamscan
+      groups: clamupdate
+      append: yes
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Get fresh ClamAV definitions for the first time"
+  command: /bin/freshclam --quiet -l /var/log/freshclam.log
+  when: just_installed_clamav.changed
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Ensure the ClamAV Scanning service is started and enabled"
+  service:
+      name: clamd@scan
+      state: started
+      enabled: yes
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Make a directory to store ClamAV scan log files"
+  file: 
+      dest: /var/log/clamav
+      owner: clamscan
+      group: clamscan
+      state: directory
+      mode: 0755
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
+
+- name: "NCNR | Copy the file for daily /home scans and weekly / scans"
+  copy:
+      src: etc/cron.daily/clamscan.sh
+      dest: /etc/cron.daily/clamscan.sh
+      owner: root
+      group: root
+      mode: 0755
+  tags:
+      - level1
+      - clamav
+      - patch
+      - ncnr
