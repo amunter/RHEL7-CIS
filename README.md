@@ -1,10 +1,10 @@
 RHEL 7 CIS STIG
 ================
 
-[![Build Status](https://travis-ci.org/daswars/RHEL7-CIS.svg?branch=devel)](https://travis-ci.org/daswars/RHEL7-CIS)
+[![Build Status](https://travis-ci.org/MindPointGroup/RHEL7-CIS.svg?branch=devel)](https://travis-ci.org/MindPointGroup/RHEL7-CIS)
+[![Ansible Role](https://img.shields.io/ansible/role/16089.svg)](https://galaxy.ansible.com/MindPointGroup/RHEL7-CIS/)
 
-
-Configure RHEL/Centos 7 machine to be CIS compliant. Level 1 and 2 findings will be corrected by default.
+Configure RHEL/Centos 7 machine to be [CIS](https://www.cisecurity.org/cis-benchmarks/) compliant. Level 1 and 2 findings will be corrected by default.
 
 This role **will make changes to the system** that could break things. This is not an auditing tool but rather a remediation tool to be used after an audit has been conducted.
 
@@ -28,6 +28,7 @@ Requirements
 ------------
 
 You should carefully read through the tasks to make sure these changes will not break your systems before running this playbook.
+If you want to do a dry run without changing anything, set the below sections (rhel7cis_section1-6) to false. 
 
 Role Variables
 --------------
@@ -156,10 +157,12 @@ rhel7cis_firewall: iptables
 Dependencies
 ------------
 
-Ansible > 1.9
+Ansible > 2.2
 
 Example Playbook
 -------------------------
+
+This sample playbook should be run in a folder that is above the main RHEL7-CIS / RHEL7-CIS-devel folder.
 
 ```
 - name: Harden Server
